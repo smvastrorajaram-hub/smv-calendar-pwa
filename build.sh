@@ -47,6 +47,7 @@ replacements = {
     'src="../assets/': 'src="assets/',
     'href="../horoscope.css': 'href="horoscope.css',
     'href="../daily-calendar.css': 'href="daily-calendar.css',
+    'href="../calendar-theme.css': 'href="calendar-theme.css',
     'href="../calendar-v226.css': 'href="calendar-v226.css',
     'src="../location-search-online-offline.js': 'src="location-search-online-offline.js',
     'src="../horoscope.js': 'src="horoscope.js',
