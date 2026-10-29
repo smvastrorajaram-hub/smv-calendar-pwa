@@ -118,11 +118,11 @@ function boot() {
   }
 
   const summaryRows = [
-    { id: "tithi", pattern: /(^|\\b)tithi\\b|திதி/i },
+    { id: "tithi", pattern: /(^|\b)tithi\b|திதி/i },
     { id: "nakshatra", pattern: /nakshatra|நட்சத்திரம்/i },
     { id: "sunrise", pattern: /sunrise|சூரிய உதயம்/i },
     { id: "sunset", pattern: /sunset|சூரிய அஸ்தமனம்/i },
-    { id: "rahu", pattern: /rahu\\s*kalam|ராகு காலம்/i },
+    { id: "rahu", pattern: /rahu\s*kalam|ராகு காலம்/i },
     { id: "yama", pattern: /yamagandam|எமகண்டம்/i },
     { id: "gulikai", pattern: /gulikai|குளிகை/i }
   ];
@@ -138,8 +138,8 @@ function boot() {
     for (const item of summaryRows) {
       const row = rows.find(candidate => item.pattern.test(candidate.cells && candidate.cells[0] ? candidate.cells[0].textContent.trim() : ""));
       if (!row || !row.cells || row.cells.length < 2) continue;
-      const label = row.cells[0].textContent.trim().replace(/\\s+/g, " ");
-      const value = row.cells[1].textContent.trim().replace(/\\s+/g, " ");
+      const label = row.cells[0].textContent.trim().replace(/\s+/g, " ");
+      const value = row.cells[1].textContent.trim().replace(/\s+/g, " ");
       if (!label || !value) continue;
       const card = make("article", "smv-calendar-summary-card smv-calendar-summary-" + item.id);
       const name = make("span", "smv-calendar-summary-label", label);
