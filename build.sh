@@ -66,10 +66,17 @@ replacements = {
     '</body>':
         '<script type="module" src="calendar-mobile-ui.mjs?v=20261029-screenshot-v1"></script>\n</body>',
 }
+unique_targets = {
+    '<meta name="theme-color" content="#0f514c">',
+    '<body class="calendar-only">',
+    '<nav class="calendar-product-nav" aria-label="SMV services">',
+    '</head>',
+    '</body>',
+}
 for a,b in replacements.items():
     count = s.count(a)
-    if count != 1:
-        raise SystemExit(f"Expected exactly one index replacement target; found {count}: {a}")
+    if count == 0 or (a in unique_targets and count != 1):
+        raise SystemExit(f"Unexpected index replacement target count ({count}): {a}")
     s = s.replace(a,b)
 
 if 'rel="canonical"' not in s:
