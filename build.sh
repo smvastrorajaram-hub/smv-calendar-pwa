@@ -75,9 +75,10 @@ unique_targets = {
 }
 for a,b in replacements.items():
     count = s.count(a)
-    if count == 0 or (a in unique_targets and count != 1):
+    if a in unique_targets and count != 1:
         raise SystemExit(f"Unexpected index replacement target count ({count}): {a}")
-    s = s.replace(a,b)
+    if count:
+        s = s.replace(a,b)
 
 if 'rel="canonical"' not in s:
     s = s.replace(
