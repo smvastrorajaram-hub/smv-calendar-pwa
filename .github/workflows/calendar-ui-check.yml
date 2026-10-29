@@ -1,0 +1,48 @@
+name: SMV CALENDAR UI source and build check
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "build.sh"
+      - "calendar-mobile-ui.css"
+      - "calendar-mobile-ui.mjs"
+      - "tests/**"
+      - ".github/workflows/calendar-ui-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Calendar PWA repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Checkout shared Calendar runtime source
+        uses: actions/checkout@v4
+        with:
+          repository: smvastrorajaram-hub/smvastroservices
+          ref: main
+          path: _source
+
+      - name: Build independent Calendar UI
+        run: bash ./build.sh
+
+      - name: Syntax-check built Calendar scripts
+        run: |
+          node --check _site/calendar-mobile-ui.mjs
+          node --check _site/calendar-pwa.mjs
+          node --check _site/daily-calendar.mjs
+          node --check _site/calendar-worker.mjs
+          node --check _site/sw.js
+
+      - name: Verify built links and preserve offline calculation assets
+        run: python3 tests/calendar-mobile-ui-smoke.py
