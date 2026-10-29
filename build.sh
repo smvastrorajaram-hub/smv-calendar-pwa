@@ -8,6 +8,9 @@ OUT="_site"
 test -f "$CAL/index.html"
 test -f "$CAL/calendar-pwa.mjs"
 test -f "$CAL/sw.js"
+test -f "calendar-mobile-ui.css"
+test -f "calendar-mobile-ui.mjs"
+test -f "tests/calendar-mobile-ui-smoke.py"
 test -f "$SRC/daily-calendar.mjs"
 test -f "$SRC/calendar-worker.mjs"
 test -d "$SRC/offline"
@@ -24,6 +27,8 @@ cp "$CAL/calendar-pwa.mjs" "$OUT/calendar-pwa.mjs"
 cp "$CAL/sw.js" "$OUT/sw.js"
 cp "$CAL/manifest-en.webmanifest" "$OUT/manifest-en.webmanifest"
 cp "$CAL/manifest-ta.webmanifest" "$OUT/manifest-ta.webmanifest"
+cp "calendar-mobile-ui.css" "$OUT/calendar-mobile-ui.css"
+cp "calendar-mobile-ui.mjs" "$OUT/calendar-mobile-ui.mjs"
 rm -rf "$OUT/calendar"
 
 printf '%s\n' "calendar.smvastroservices.in" > "$OUT/CNAME"
@@ -50,8 +55,21 @@ replacements = {
         '<a href="https://smvastroservices.in/" target="_blank" rel="noopener">SMV ASTRO</a>',
     '<a href="../" target="_blank" rel="noopener">SMV HOROSCOPE</a>':
         '<a href="https://horoscope.smvastroservices.in/" target="_blank" rel="noopener">SMV HOROSCOPE</a>',
+    '<meta name="theme-color" content="#0f514c">':
+        '<meta name="theme-color" content="#4c2b7b">',
+    '<body class="calendar-only">':
+        '<body class="calendar-only smv-calendar-refresh">',
+    '<nav class="calendar-product-nav" aria-label="SMV services">':
+        '<div class="smv-calendar-brand"><strong>SMV CALENDAR</strong><span class="smv-calendar-brand-tagline" data-en="Panchangam · Hora · Rasi Palan" data-ta="பஞ்சாங்கம் · ஹோரை · ராசி பலன்">Panchangam · Hora · Rasi Palan</span></div>\n<nav class="calendar-product-nav" aria-label="SMV services">',
+    '</head>':
+        '<link rel="stylesheet" href="calendar-mobile-ui.css?v=20261029-screenshot-v1">\n</head>',
+    '</body>':
+        '<script type="module" src="calendar-mobile-ui.mjs?v=20261029-screenshot-v1"></script>\n</body>',
 }
 for a,b in replacements.items():
+    count = s.count(a)
+    if count != 1:
+        raise SystemExit(f"Expected exactly one index replacement target; found {count}: {a}")
     s = s.replace(a,b)
 
 if 'rel="canonical"' not in s:
@@ -68,6 +86,8 @@ for lang in ("en", "ta"):
     data["id"] = "/"
     data["start_url"] = f"/?lang={lang}&source=calendar-subdomain-pwa"
     data["scope"] = "/"
+    data["theme_color"] = "#4c2b7b"
+    data["background_color"] = "#f3efff"
     for icon in data.get("icons", []):
         src = icon.get("src", "")
         src = src.replace("/horoscope/assets/", "/assets/")
@@ -78,10 +98,10 @@ for lang in ("en", "ta"):
 # Calendar install logic is now at origin root, not /horoscope/calendar/.
 p = out / "calendar-pwa.mjs"
 s = p.read_text(encoding="utf-8")
-s = s.replace("smv-calendar-controller-reload-v217", "smv-calendar-controller-reload-independent-v1")
+s = s.replace("smv-calendar-controller-reload-v217", "smv-calendar-controller-reload-independent-ui-v1")
 s = s.replace("'/horoscope/calendar/sw.js'", "'/sw.js'")
-s = s.replace("./sw.js?v=217", "./sw.js?v=independent-v1")
-s = s.replace("manifest-${lang}.webmanifest?v=217", "manifest-${lang}.webmanifest?v=independent-v1")
+s = s.replace("./sw.js?v=217", "./sw.js?v=independent-ui-v1")
+s = s.replace("manifest-${lang}.webmanifest?v=217", "manifest-${lang}.webmanifest?v=independent-ui-v1")
 p.write_text(s, encoding="utf-8")
 
 # Calendar page detection + icon path for the new independent origin.
